@@ -4,7 +4,17 @@
 import frappe
 from frappe.core.doctype.communication.email import make
 from frappe.model.document import Document
-from nextai.funnel.custom_trigger import trigger_event
+
+try:
+	from nextai.funnel.custom_trigger import trigger_event
+except ImportError:
+
+	def trigger_event(*args, **kwargs):
+		frappe.log_error(
+			title="CBSE LOC: nextai not installed",
+			message="trigger_event was called but the 'nextai' app is not installed on this bench.",
+		)
+
 
 from edu_quality.edu_quality.server_scripts.utils import (
 	format_mobile_number,

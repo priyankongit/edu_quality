@@ -14,7 +14,7 @@ from erpnext.accounts.doctype.payment_request.payment_request import (
 	get_existing_payment_request_amount,
 	get_gateway_details,
 )
-from erpnext.accounts.party import get_party_bank_account
+from erpnext.accounts.doctype.bank_account.bank_account import get_party_bank_account
 from frappe import _
 from frappe.utils import nowdate
 from frappe.utils.data import cint, flt

@@ -6,7 +6,7 @@ from erpnext.accounts.doctype.payment_request.payment_request import (
 	get_dummy_message,
 	get_gateway_details,
 )
-from erpnext.accounts.party import get_party_bank_account
+from erpnext.accounts.doctype.bank_account.bank_account import get_party_bank_account
 from frappe.model.document import Document
 
 
