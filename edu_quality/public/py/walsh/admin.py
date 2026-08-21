@@ -741,6 +741,8 @@ def send_test_mail(**kwargs):
 # /api/method/edu_quality.public.py.walsh.admin.get_student_count
 @frappe.whitelist()
 def get_student_count(**kwargs):
+	from edu_quality.common.utils.access import get_user_schools
+
 	classes = kwargs.get("classes")
 	divisions = kwargs.get("divisions")
 	student_statuses = kwargs.get("student_statuses")
@@ -748,6 +750,15 @@ def get_student_count(**kwargs):
 	classes = json.loads(classes)
 	divisions = json.loads(divisions)
 	student_statuses = json.loads(student_statuses)
+
+	schools = get_user_schools()
+	if schools is not None:
+		if classes:
+			classes = frappe.get_all("Program", filters={"name": ["in", classes], "school": ["in", schools]}, pluck="name")
+		if divisions:
+			divisions = frappe.get_all(
+				"Student Group", filters={"name": ["in", divisions], "custom_school": ["in", schools]}, pluck="name"
+			)
 
 	if not len(classes) and not len(divisions):
 		return 0

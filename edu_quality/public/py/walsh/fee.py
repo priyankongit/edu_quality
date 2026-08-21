@@ -8,6 +8,9 @@ from edu_quality.edu_quality.server_scripts.utils import (
 
 @frappe.whitelist()
 def get_academic_year_with_fees(student):
+	from edu_quality.common.utils.access import assert_student_access
+
+	assert_student_access(student)
 	fees = frappe.db.get_all("Fees", filters={"docstatus": 1, "student": student}, fields=["academic_year"])
 	fa = frappe.db.get_all(
 		"Fee Advance",
@@ -22,6 +25,9 @@ def get_academic_year_with_fees(student):
 
 @frappe.whitelist()
 def get_student_fee_schedule(student):
+	from edu_quality.common.utils.access import assert_student_access
+
+	assert_student_access(student)
 	academic_year = current_academic_year()
 	next_acad_year = next_academic_year()
 	fee_advance = (

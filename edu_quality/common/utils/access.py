@@ -64,6 +64,29 @@ def assert_admin():
 		frappe.throw(_("You are not permitted to perform this action."), frappe.PermissionError)
 
 
+def get_user_schools():
+	"""List of School names the current user is restricted to, or None if unrestricted
+	(Administrator, System Manager, or no School assigned to their Employee record — e.g.
+	head office). Reads the "School" User Permission rows that
+	edu_quality.edu_quality.server_scripts.employee.add_to_user_permission keeps in sync with
+	Employee.school, so there is nothing new to maintain.
+
+	Usage in raw-SQL/query-builder endpoints that bypass Frappe's own permission engine:
+
+		schools = get_user_schools()
+		if schools is not None:
+			# restrict the query to `schools`, or frappe.throw if the requested
+			# record's school isn't in it
+	"""
+	user = frappe.session.user
+	if not user or user == "Guest":
+		return []
+	if user == "Administrator" or "System Manager" in frappe.get_roles(user):
+		return None
+	schools = frappe.get_all("User Permission", filters={"user": user, "allow": "School"}, pluck="for_value")
+	return schools or None
+
+
 def enforce_otp_attempts(key, limit=5, window=600):
 	"""Throttle OTP verification to defeat brute-forcing of short numeric OTPs.
 

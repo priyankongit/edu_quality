@@ -4,6 +4,7 @@ from collections import Counter, defaultdict
 
 import frappe
 import pandas as pd
+from frappe import _
 
 
 @frappe.whitelist()
@@ -25,6 +26,12 @@ def get_student_data(student):
 
 @frappe.whitelist()
 def get_student_details(program):
+	from edu_quality.common.utils.access import get_user_schools
+
+	schools = get_user_schools()
+	if schools is not None and frappe.get_value("Program", program, "school") not in schools:
+		frappe.throw(_("You are not permitted to access this record."), frappe.PermissionError)
+
 	try:
 		academic_year = frappe.get_value("Academic Year", {"custom_current_academic_year": 1}, "name")
 		batches = set(
