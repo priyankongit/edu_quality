@@ -17,6 +17,8 @@ export interface Student {
   enquired_class: string;
   blood_group: string;
   annual_income: string;
+  // Not yet populated by the backend (Student has no such field) - see SchoolCalendar.tsx
+  school_calendar_url?: string;
 }
 
 const useStudentList = ({ enabled }: { enabled?: boolean } = {}) => {
