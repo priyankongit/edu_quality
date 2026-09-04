@@ -4,7 +4,7 @@
   "description": "Edu Quality",
   "main": "index.js",
   "scripts": {
-    "postinstall": "cd walsh && yarn install && cd ../ui && yarn install && cd ../cmap_mgr && yarn install",
+    "postinstall": "cd walsh && yarn install && cd ../ui && yarn install --ignore-engines && cd ../cmap_mgr && yarn install --ignore-engines",
     "dev": "cd walsh && yarn dev --host",
     "build": "cd walsh && yarn build && cd ../ui && yarn build && cd ../cmap_mgr && yarn build",
     "test": "echo \"Error: no test specified\" && exit 1"
