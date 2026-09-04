@@ -7,7 +7,6 @@ import frappe
 from erpnext.accounts.utils import get_balance_on
 from frappe import _
 from frappe.utils import add_days
-from nextai.funnel.custom_trigger import trigger_event
 
 TYPE_MAP = {"Payment": "Cash Entry", "Cash Withdrawal": "Bank Entry"}
 REVERSE_TYPE_MAP = {v: k for k, v in TYPE_MAP.items()}

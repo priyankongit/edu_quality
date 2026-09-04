@@ -14,7 +14,17 @@ from erpnext.accounts.doctype.payment_request.payment_request import PaymentRequ
 from erpnext.accounts.general_ledger import make_reverse_gl_entries
 from erpnext.accounts.utils import get_account_currency
 from frappe.utils import flt, get_url, nowdate
-from nextai.funnel.custom_trigger import trigger_event
+
+try:
+	from nextai.funnel.custom_trigger import trigger_event
+except ImportError:
+
+	def trigger_event(*args, **kwargs):
+		frappe.log_error(
+			title="Fee: nextai not installed",
+			message="trigger_event was called but the 'nextai' app is not installed on this bench.",
+		)
+
 
 from edu_quality.edu_quality.server_scripts.payment_plan import (
 	remove_payment_plan_discount,

@@ -4,7 +4,17 @@ from datetime import datetime, timedelta
 import frappe
 import requests
 from frappe.core.doctype.communication.email import make
-from nextai.funnel.custom_trigger import trigger_event
+
+try:
+	from nextai.funnel.custom_trigger import trigger_event
+except ImportError:
+
+	def trigger_event(*args, **kwargs):
+		frappe.log_error(
+			title="Tasks: nextai not installed",
+			message="trigger_event was called but the 'nextai' app is not installed on this bench.",
+		)
+
 
 from edu_quality.edu_quality.overrides.program_enrollment import sync_student_data
 from edu_quality.edu_quality.server_scripts.utils import current_academic_year

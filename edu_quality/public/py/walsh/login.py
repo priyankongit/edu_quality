@@ -4,9 +4,19 @@ import random
 import frappe
 import requests
 from frappe.auth import LoginManager
-from nextai.whatsapp_business_api_integration.doctype.whatsapp_message.whatsapp_message import (
-	send_templated_message,
-)
+
+try:
+	from nextai.whatsapp_business_api_integration.doctype.whatsapp_message.whatsapp_message import (
+		send_templated_message,
+	)
+except ImportError:
+
+	def send_templated_message(*args, **kwargs):
+		frappe.log_error(
+			title="Walsh Login: nextai not installed",
+			message="send_templated_message was called but the 'nextai' app is not installed on this bench.",
+		)
+
 
 from edu_quality.public.py.utils import remove_indian_country_code
 

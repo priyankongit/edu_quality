@@ -2,7 +2,12 @@ import json
 import re
 
 import frappe
-from nextai.utils import get_host_with_protocol
+from frappe.utils import get_url
+
+try:
+	from nextai.utils import get_host_with_protocol
+except ImportError:
+	get_host_with_protocol = get_url
 
 from edu_quality.public.py.utils import generate_fields_map
 
