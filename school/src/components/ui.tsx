@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { fileUrl } from "@/lib/frappe";
 import { useBrand } from "@/lib/queries";
@@ -7,14 +8,20 @@ import { useBrand } from "@/lib/queries";
 export function SchoolLogo({ size = 40, className }: { size?: number; className?: string }) {
   const brand = useBrand();
   const src = fileUrl(brand.logo || brand.icon);
+  const [failed, setFailed] = useState(false);
   const initials = (brand.short_name || brand.app_name).slice(0, 3).toUpperCase();
   return (
     <span
       className={clsx("grid shrink-0 place-items-center overflow-hidden rounded-full bg-white ring-1 ring-black/5", className)}
       style={{ width: size, height: size }}
     >
-      {src ? (
-        <img src={src} alt={brand.school_name || brand.app_name} className="h-full w-full object-contain" />
+      {src && !failed ? (
+        <img
+          src={src}
+          alt={brand.school_name || brand.app_name}
+          onError={() => setFailed(true)}
+          className="h-full w-full object-contain"
+        />
       ) : (
         <span className="font-extrabold text-brand" style={{ fontSize: size * 0.32 }}>
           {initials}
