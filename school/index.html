@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+		<meta name="format-detection" content="telephone=no" />
+		<title>{{ title }}</title>
+		{{ head_html | safe }}
+	</head>
+	<body>
+		<div id="root"></div>
+		<!-- Filled in by edu_quality/www/school.py; in `vite dev` it stays unrendered and the app fetches branding instead. -->
+		<script id="school-boot" type="application/json">{{ boot_json | safe }}</script>
+		<script type="module" src="/src/main.tsx"></script>
+	</body>
+</html>

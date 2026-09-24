@@ -381,6 +381,7 @@ after_migrate = [
 website_route_rules = [
 	{"from_route": "/walsh/<path:app_path>", "to_route": "walsh"},
 	{"from_route": "/ui/<path:app_path>", "to_route": "ui"},
+	{"from_route": "/school/<path:app_path>", "to_route": "school"},
 ]
 
 

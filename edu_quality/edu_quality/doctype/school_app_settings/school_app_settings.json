@@ -1,0 +1,138 @@
+{
+ "actions": [],
+ "creation": "2026-09-24 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "identity_section",
+  "app_name",
+  "short_name",
+  "school_name",
+  "tagline",
+  "column_break_identity",
+  "logo",
+  "app_icon",
+  "colours_section",
+  "primary_color",
+  "secondary_color",
+  "column_break_colours",
+  "ink_color",
+  "apps_section",
+  "enable_teacher_app"
+ ],
+ "fields": [
+  {
+   "fieldname": "identity_section",
+   "fieldtype": "Section Break",
+   "label": "School Identity"
+  },
+  {
+   "default": "School App",
+   "description": "Shown on the sign-in screen and in the browser tab.",
+   "fieldname": "app_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "App Name",
+   "reqd": 1
+  },
+  {
+   "description": "Shown under the home-screen icon. Keep it to 12 characters or fewer.",
+   "fieldname": "short_name",
+   "fieldtype": "Data",
+   "label": "Short Name",
+   "length": 12
+  },
+  {
+   "fieldname": "school_name",
+   "fieldtype": "Data",
+   "label": "School Name"
+  },
+  {
+   "fieldname": "tagline",
+   "fieldtype": "Data",
+   "label": "Tagline"
+  },
+  {
+   "fieldname": "column_break_identity",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "logo",
+   "fieldtype": "Attach Image",
+   "label": "Logo"
+  },
+  {
+   "description": "Square PNG, at least 512 × 512 px. Used for the home-screen icon; falls back to the logo.",
+   "fieldname": "app_icon",
+   "fieldtype": "Attach Image",
+   "label": "App Icon"
+  },
+  {
+   "fieldname": "colours_section",
+   "fieldtype": "Section Break",
+   "label": "Brand Colours"
+  },
+  {
+   "default": "#3346D3",
+   "description": "Buttons, active tabs and highlights.",
+   "fieldname": "primary_color",
+   "fieldtype": "Color",
+   "label": "Primary Colour"
+  },
+  {
+   "default": "#E8ECF8",
+   "description": "Soft backgrounds behind the logo and cards.",
+   "fieldname": "secondary_color",
+   "fieldtype": "Color",
+   "label": "Secondary Colour"
+  },
+  {
+   "fieldname": "column_break_colours",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "#111827",
+   "description": "Headings and body text in light mode.",
+   "fieldname": "ink_color",
+   "fieldtype": "Color",
+   "label": "Text Colour"
+  },
+  {
+   "fieldname": "apps_section",
+   "fieldtype": "Section Break",
+   "label": "Apps"
+  },
+  {
+   "default": "1",
+   "description": "Lets instructors sign in at /school.",
+   "fieldname": "enable_teacher_app",
+   "fieldtype": "Check",
+   "label": "Enable Teacher App"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-09-24 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Edu Quality",
+ "name": "School App Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

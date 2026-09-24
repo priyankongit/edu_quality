@@ -1,0 +1,69 @@
+@import "@fontsource-variable/plus-jakarta-sans";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Brand tokens are RGB triplets, overwritten at runtime from School App Settings (see lib/theme.ts). */
+:root {
+  --brand: 51 70 211;
+  --brand-soft: 232 236 248;
+  --on-brand: 255 255 255;
+  --ink-light: 17 24 39;
+
+  --bg: 246 246 244;
+  --card: 255 255 255;
+  --ink: var(--ink-light);
+  --muted: 107 111 118;
+  --line: 229 229 226;
+  --good: 22 135 84;
+  --warn: 180 115 10;
+  --bad: 200 55 47;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: 14 14 16;
+    --card: 26 26 29;
+    --ink: 244 244 245;
+    --muted: 161 161 170;
+    --line: 44 44 48;
+    --good: 88 205 145;
+    --warn: 240 190 90;
+    --bad: 250 130 120;
+    color-scheme: dark;
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  @apply bg-bg text-ink font-sans antialiased;
+  overscroll-behavior-y: none;
+}
+
+@layer utilities {
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
