@@ -6,8 +6,6 @@ from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
 	get_accounting_dimensions,
 )
 from erpnext.accounts.doctype.payment_request.payment_request import get_gateway_details
-from erpnext.accounts.party import get_party_bank_account
-from frappe.auth import LoginManager
 from frappe.desk.query_report import run
 from frappe.utils import getdate
 
@@ -108,14 +106,6 @@ class CustomStudent(Student):
 		return exit.name
 
 	def validate_user(self):
-		current_user = None
-		login_manager = None
-
-		if not frappe.flags.in_import:
-			current_user = frappe.session.user
-			login_manager = LoginManager()
-			login_manager.login_as("Administrator")
-
 		if not frappe.db.get_single_value(
 			"Education Settings", "user_creation_skip"
 		) and not frappe.db.exists("User", self.student_email_id):
@@ -130,13 +120,13 @@ class CustomStudent(Student):
 					"user_type": "Website User",
 				}
 			)
+			# Staff creating a student usually can't create Users; skip the check for this one
+			# record rather than switching the whole session to Administrator.
+			student_user.flags.ignore_permissions = True
 			student_user.add_roles("Student")
 			student_user.save(ignore_permissions=True)
 
 			self.user = student_user.name
-
-		if not frappe.flags.in_import:
-			login_manager.login_as(current_user)
 
 	@frappe.whitelist()
 	def validate_bank_account(self):
