@@ -29,13 +29,13 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-[100dvh] flex-col">
-      <div className="pt-safe relative overflow-hidden bg-brand-soft dark:bg-brand/25">
+    <div className="flex min-h-[100dvh] flex-col md:grid md:grid-cols-2">
+      <div className="pt-safe relative overflow-hidden bg-brand-soft md:flex md:items-center md:justify-center dark:bg-brand/25">
         <div aria-hidden className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-brand/10" />
         <div aria-hidden className="absolute -bottom-24 -left-10 h-48 w-48 rounded-full bg-brand/10" />
-        <div className="relative mx-auto flex max-w-md flex-col items-center px-6 pb-14 pt-14 text-center">
-          <SchoolLogo size={112} className="shadow-float ring-4 ring-white/70" />
-          <h1 className="mt-6 text-balance text-[26px] font-extrabold leading-tight tracking-tight">
+        <div className="relative mx-auto flex max-w-md flex-col items-center px-6 pb-14 pt-14 text-center md:py-16">
+          <SchoolLogo size={112} className="shadow-float ring-4 ring-white/70 md:!h-40 md:!w-40" />
+          <h1 className="mt-6 text-balance text-[26px] font-extrabold leading-tight tracking-tight md:text-4xl">
             {brand.school_name || brand.app_name}
           </h1>
           {brand.tagline && <p className="mt-1.5 text-[15px] font-medium text-muted">{brand.tagline}</p>}
@@ -45,7 +45,7 @@ export default function Login() {
       <form
         onSubmit={onSubmit}
         noValidate
-        className="relative -mt-7 mx-auto flex w-full max-w-md flex-1 flex-col gap-4 rounded-t-4xl bg-bg px-6 pb-[calc(24px+env(safe-area-inset-bottom,0px))] pt-8"
+        className="relative -mt-7 mx-auto flex w-full max-w-md flex-1 flex-col gap-4 rounded-t-4xl bg-bg px-6 pb-[calc(24px+env(safe-area-inset-bottom,0px))] pt-8 md:mt-0 md:max-w-sm md:justify-center md:rounded-none md:px-0"
       >
         <div>
           <h2 className="text-xl font-extrabold tracking-tight">Sign in</h2>
@@ -103,7 +103,7 @@ export default function Login() {
           Forgot password?
         </a>
 
-        <p className="mt-auto pt-6 text-center text-xs text-muted">{brand.app_name}</p>
+        <p className="mt-auto pt-6 text-center text-xs text-muted md:mt-6">{brand.app_name}</p>
       </form>
     </div>
   );

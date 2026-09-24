@@ -24,3 +24,63 @@ export type Session = {
   } | null;
   csrf_token?: string;
 };
+
+export type AttendanceSummary = {
+  strength: number;
+  marked: number;
+  present: number;
+  absent: number;
+  submitted: boolean;
+};
+
+export type Division = {
+  name: string;
+  student_group_name: string;
+  program: string;
+  school: string | null;
+  holiday: boolean;
+  attendance: AttendanceSummary;
+};
+
+export type Period = {
+  name: string;
+  division: string;
+  division_name: string;
+  subject: string;
+  subject_name: string | null;
+  from_time: string;
+  to_time: string;
+  type: string | null;
+};
+
+export type MyDay = {
+  date: string;
+  weekday: string;
+  divisions: Division[];
+  periods: Period[];
+};
+
+export type AttendanceStatus = {
+  name: string;
+  type: "Present" | "Absent" | "Other";
+  code: string;
+  color: string | null;
+};
+
+export type RegisterStudent = {
+  student: string;
+  student_name: string;
+  roll_no: string | null;
+  image: string | null;
+  status: string | null;
+  locked: boolean;
+};
+
+export type Register = {
+  division: { name: string; student_group_name: string; program: string; school: string | null };
+  date: string;
+  holiday: boolean;
+  statuses: AttendanceStatus[];
+  students: RegisterStudent[];
+  submitted: boolean;
+};

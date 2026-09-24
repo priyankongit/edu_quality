@@ -5,7 +5,9 @@ import { applyBranding } from "@/lib/theme";
 import { useBranding, useSession } from "@/lib/queries";
 import Login from "@/screens/Login";
 import Me from "@/screens/Me";
-import { Classes, Homework } from "@/screens/Placeholders";
+import Attendance from "@/screens/Attendance";
+import Classes from "@/screens/Classes";
+import { Homework } from "@/screens/Placeholders";
 import { LoadError, NoAccess, Splash } from "@/screens/Status";
 import Today from "@/screens/Today";
 
@@ -17,6 +19,7 @@ const router = createBrowserRouter(
       children: [
         { index: true, element: <Today /> },
         { path: "classes", element: <Classes /> },
+        { path: "attendance/:division", element: <Attendance /> },
         { path: "homework", element: <Homework /> },
         { path: "me", element: <Me /> },
         { path: "*", element: <Navigate to="/" replace /> },

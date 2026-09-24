@@ -1,17 +1,6 @@
-import { BookOpenCheck, UsersRound } from "lucide-react";
+import { BookOpenCheck } from "lucide-react";
 import { PageTitle } from "@/components/AppShell";
 import { EmptyState } from "@/components/ui";
-
-export function Classes() {
-  return (
-    <div>
-      <PageTitle title="Classes" subtitle="Your divisions and students" />
-      <EmptyState icon={<UsersRound className="h-7 w-7" />} title="Your classes are on the way">
-        Class lists, attendance and student profiles arrive in the next update.
-      </EmptyState>
-    </div>
-  );
-}
 
 export function Homework() {
   return (

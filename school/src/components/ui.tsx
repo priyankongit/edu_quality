@@ -66,8 +66,10 @@ export function Button({ variant = "primary", loading, className, children, disa
   );
 }
 
-export function Card({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={clsx("rounded-3xl bg-card p-4 shadow-card ring-1 ring-line/60", className)}>{children}</div>;
+export function Card({ className, children, flush }: { className?: string; children: ReactNode; flush?: boolean }) {
+  return (
+    <div className={clsx("rounded-3xl bg-card shadow-card ring-1 ring-line/60", !flush && "p-4", className)}>{children}</div>
+  );
 }
 
 export function SectionTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
@@ -100,4 +102,8 @@ export function Chip({ children, tone = "brand" }: { children: ReactNode; tone?:
       {children}
     </span>
   );
+}
+
+export function Skeleton({ className }: { className?: string }) {
+  return <div aria-hidden className={clsx("animate-pulse rounded-3xl bg-line/60", className)} />;
 }

@@ -20,7 +20,7 @@ export default function Me() {
   const name = user.instructor?.instructor_name || user.full_name || user.user;
 
   return (
-    <div className="grid gap-5">
+    <div className="grid grid-cols-1 gap-5">
       <PageTitle title="Me" />
 
       <Card className="flex items-center gap-4">
@@ -36,7 +36,7 @@ export default function Me() {
         </div>
       </Card>
 
-      <Card className="divide-y divide-line p-0">
+      <Card flush className="divide-y divide-line overflow-hidden">
         {user.instructor?.school && (
           <div className="flex items-center justify-between px-4 py-3.5">
             <span className="text-[15px] text-muted">School</span>

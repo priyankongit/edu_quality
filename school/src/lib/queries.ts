@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { boot } from "./boot";
 import { call, setCsrfToken } from "./frappe";
-import type { Branding, Session } from "./types";
+import type { AttendanceSummary, Branding, MyDay, Register, Session } from "./types";
 
 export function useBranding() {
   return useQuery({
@@ -34,4 +34,35 @@ export function useBrand() {
 /** Session for the signed-in user; the shell only renders once signed in. */
 export function useCurrentUser() {
   return useSession().data as Session;
+}
+
+export function useMyDay() {
+  return useQuery({
+    queryKey: ["my-day"],
+    queryFn: () => call<MyDay>("edu_quality.api.teacher.get_my_day", undefined, { http: "GET" }),
+  });
+}
+
+export function useRegister(division: string, date: string) {
+  return useQuery({
+    queryKey: ["register", division, date],
+    queryFn: () => call<Register>("edu_quality.api.teacher.get_register", { division, date }, { http: "GET" }),
+  });
+}
+
+export function useSaveRegister(division: string, date: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ marks, submit }: { marks: Record<string, string>; submit: boolean }) =>
+      call<{ attendance: AttendanceSummary; notified: number }>("edu_quality.api.teacher.save_register", {
+        division,
+        date,
+        marks,
+        submit: submit ? 1 : 0,
+      }),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: ["register", division, date] });
+      void client.invalidateQueries({ queryKey: ["my-day"] });
+    },
+  });
 }
