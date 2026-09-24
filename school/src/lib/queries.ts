@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { boot } from "./boot";
 import { call, setCsrfToken } from "./frappe";
-import type { AttendanceSummary, Branding, MyDay, Register, Session } from "./types";
+import type { AttendanceSummary, Branding, HomeworkDetail, HomeworkForm, HomeworkStatus, HomeworkSummary, MyDay, Register, Session } from "./types";
 
 export function useBranding() {
   return useQuery({
@@ -64,5 +64,45 @@ export function useSaveRegister(division: string, date: string) {
       void client.invalidateQueries({ queryKey: ["register", division, date] });
       void client.invalidateQueries({ queryKey: ["my-day"] });
     },
+  });
+}
+
+export function useHomeworkList() {
+  return useQuery({
+    queryKey: ["homework"],
+    queryFn: () => call<HomeworkSummary[]>("edu_quality.api.teacher.get_homework_list", undefined, { http: "GET" }),
+  });
+}
+
+export function useHomeworkForm(division: string) {
+  return useQuery({
+    queryKey: ["homework-form", division],
+    queryFn: () => call<HomeworkForm>("edu_quality.api.teacher.get_homework_form", { division }, { http: "GET" }),
+    enabled: !!division,
+  });
+}
+
+export function useHomework(name: string) {
+  return useQuery({
+    queryKey: ["homework", name],
+    queryFn: () => call<HomeworkDetail>("edu_quality.api.teacher.get_homework", { name }, { http: "GET" }),
+  });
+}
+
+export function useCreateHomework() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (args: { division: string; title: string; due_date: string; subject?: string; instructions?: string; cmap?: string }) =>
+      call<HomeworkSummary>("edu_quality.api.teacher.create_homework", args),
+    onSuccess: () => void client.invalidateQueries({ queryKey: ["homework"] }),
+  });
+}
+
+export function useUpdateHomework(name: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (args: { updates?: Record<string, { status?: HomeworkStatus; remarks?: string }>; status?: "Open" | "Closed" }) =>
+      call<HomeworkSummary>("edu_quality.api.teacher.update_homework", { name, ...args }),
+    onSuccess: () => void client.invalidateQueries({ queryKey: ["homework"] }),
   });
 }

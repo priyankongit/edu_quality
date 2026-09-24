@@ -7,7 +7,7 @@ import Login from "@/screens/Login";
 import Me from "@/screens/Me";
 import Attendance from "@/screens/Attendance";
 import Classes from "@/screens/Classes";
-import { Homework } from "@/screens/Placeholders";
+import { HomeworkDetail, HomeworkList, NewHomework } from "@/screens/Homework";
 import { LoadError, NoAccess, Splash } from "@/screens/Status";
 import Today from "@/screens/Today";
 
@@ -20,7 +20,9 @@ const router = createBrowserRouter(
         { index: true, element: <Today /> },
         { path: "classes", element: <Classes /> },
         { path: "attendance/:division", element: <Attendance /> },
-        { path: "homework", element: <Homework /> },
+        { path: "homework", element: <HomeworkList /> },
+        { path: "homework/new", element: <NewHomework /> },
+        { path: "homework/:name", element: <HomeworkDetail /> },
         { path: "me", element: <Me /> },
         { path: "*", element: <Navigate to="/" replace /> },
       ],

@@ -90,7 +90,7 @@ function QuickActions({ day }: { day?: MyDay }) {
       to: pending ? registerPath(pending.name) : "/classes",
     },
     { label: "My classes", hint: "Registers & students", icon: UsersRound, to: "/classes" },
-    { label: "Add homework", hint: "From your CMAP", icon: NotebookPen },
+    { label: "Add homework", hint: "From your CMAP", icon: NotebookPen, to: "/homework/new" },
     { label: "Enter marks", hint: "Open exams", icon: PenLine },
   ];
   return (

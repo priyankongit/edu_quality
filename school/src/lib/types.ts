@@ -84,3 +84,31 @@ export type Register = {
   students: RegisterStudent[];
   submitted: boolean;
 };
+
+export type HomeworkSummary = {
+  name: string;
+  title: string;
+  division: string;
+  division_name: string;
+  subject: string | null;
+  subject_name: string | null;
+  assigned_on: string;
+  due_date: string;
+  status: "Open" | "Closed";
+  total: number;
+  submitted: number;
+  reviewed: number;
+};
+
+export type HomeworkStatus = "Pending" | "Submitted" | "Reviewed";
+
+export type HomeworkDetail = HomeworkSummary & {
+  instructions: string | null;
+  attachment: string | null;
+  submissions: { student: string; student_name: string; roll_no: string | null; status: HomeworkStatus; remarks: string | null }[];
+};
+
+export type HomeworkForm = {
+  subjects: { name: string; label: string }[];
+  suggestions: { cmap: string; subject: string | null; subject_name: string | null; home_work: string }[];
+};
