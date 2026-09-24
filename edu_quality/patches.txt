@@ -1,0 +1,5 @@
+[pre_model_sync]
+
+[post_model_sync]
+edu_quality.patches.v1.enable_absence_notifications
+edu_quality.patches.v1.remove_orphaned_custom_fields

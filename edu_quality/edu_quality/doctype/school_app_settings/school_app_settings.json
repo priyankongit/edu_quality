@@ -19,7 +19,8 @@
   "column_break_colours",
   "ink_color",
   "apps_section",
-  "enable_teacher_app"
+  "enable_teacher_app",
+  "notify_parents_of_absence"
  ],
  "fields": [
   {
@@ -109,12 +110,19 @@
    "fieldname": "enable_teacher_app",
    "fieldtype": "Check",
    "label": "Enable Teacher App"
+  },
+  {
+   "default": "1",
+   "description": "Sends a push alert to parents using the parent app when a submitted register marks their child absent.",
+   "fieldname": "notify_parents_of_absence",
+   "fieldtype": "Check",
+   "label": "Notify Parents of Absence"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-09-24 12:00:00.000000",
+ "modified": "2026-09-25 10:00:00.000000",
  "modified_by": "Administrator",
  "module": "Edu Quality",
  "name": "School App Settings",

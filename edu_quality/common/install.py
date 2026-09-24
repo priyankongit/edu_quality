@@ -8,6 +8,7 @@ from edu_quality.edu_quality.overrides.company import ACCOUNT_HEADS, create_acco
 
 def after_install():
 	create_default_roles()
+	create_default_attendance_statuses()
 	companies = frappe.get_all("Company", pluck="name")
 	for company in companies:
 		for account_head in ACCOUNT_HEADS:
@@ -31,6 +32,24 @@ def create_default_roles():
 			frappe.get_doc({"doctype": "Role", "role_name": role_name, "desk_access": 1}).insert(
 				ignore_permissions=True
 			)
+
+
+DEFAULT_ATTENDANCE_STATUSES = (
+	# status, type, code, colour
+	("Present", "Present", "P", "#16A34A"),
+	("Absent", "Absent", "A", "#DC2626"),
+	("Late", "Present", "L", "#D97706"),
+	("Early Pickup", "Other", "E", "#2563EB"),
+)
+
+
+def create_default_attendance_statuses():
+	"""Attendance can't be recorded until these exist; schools can edit or add more."""
+	for status, status_type, code, color in DEFAULT_ATTENDANCE_STATUSES:
+		if not frappe.db.exists("Attendance Status", status):
+			frappe.get_doc(
+				{"doctype": "Attendance Status", "status": status, "type": status_type, "code": code, "color": color}
+			).insert(ignore_permissions=True)
 
 
 def _fixture_roles():

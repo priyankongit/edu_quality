@@ -375,6 +375,7 @@ fixtures = [{"dt": "Custom DocPerm"}]
 
 after_migrate = [
 	"edu_quality.common.install.create_default_roles",
+	"edu_quality.common.install.create_default_attendance_statuses",
 	"edu_quality.public.py.utils.migrate",
 	"edu_quality.edu_quality.server_scripts.after_migrate.after_migrate",
 ]
