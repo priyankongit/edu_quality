@@ -34,7 +34,28 @@ export function LoadError({ message, onRetry }: { message: string; onRetry: () =
   );
 }
 
-export function NoAccess({ reason }: { reason: "disabled" | "role" }) {
+const NO_ACCESS = {
+  disabled: {
+    title: "The teacher app is switched off",
+    body: "Your school hasn't turned it on yet. An administrator can enable it in School App Settings.",
+  },
+  "student-disabled": {
+    title: "The student app is switched off",
+    body: "Your school hasn't turned it on yet. Please check with your class teacher.",
+  },
+  "not-enrolled": {
+    title: "You aren't in a class yet",
+    body: "Your account isn't enrolled in a class for this year. Please contact the school office.",
+  },
+  role: {
+    title: "This app is for teachers and students",
+    body: "Your account isn't linked to an instructor or a student. Ask the school office to link it.",
+  },
+};
+
+export function NoAccess({ reason }: { reason: keyof typeof NO_ACCESS }) {
+  const { title, body } = NO_ACCESS[reason];
+  const staffReason = reason === "disabled" || reason === "role";
   return (
     <Message
       icon={
@@ -43,21 +64,21 @@ export function NoAccess({ reason }: { reason: "disabled" | "role" }) {
           <ShieldAlert className="absolute -bottom-1 -right-1 h-7 w-7 rounded-full bg-bg p-0.5 text-bad" />
         </span>
       }
-      title={reason === "disabled" ? "The teacher app is switched off" : "This app is for teachers"}
+      title={title}
       action={
         <div className="grid w-full gap-2">
-          <a href="/app" className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-card font-semibold ring-1 ring-line">
-            Open the ERP instead
-          </a>
+          {staffReason && (
+            <a href="/app" className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-card font-semibold ring-1 ring-line">
+              Open the ERP instead
+            </a>
+          )}
           <Button variant="danger" onClick={logout}>
             Sign out
           </Button>
         </div>
       }
     >
-      {reason === "disabled"
-        ? "Your school hasn't turned it on yet. An administrator can enable it in School App Settings."
-        : "Your account isn't linked to an active instructor. Ask the school office to link your employee record to an Instructor."}
+      {body}
     </Message>
   );
 }

@@ -20,7 +20,9 @@
   "ink_color",
   "apps_section",
   "enable_teacher_app",
-  "notify_parents_of_absence"
+  "enable_student_app",
+  "notify_parents_of_absence",
+  "show_fees_to_teachers"
  ],
  "fields": [
   {
@@ -113,16 +115,30 @@
   },
   {
    "default": "1",
+   "description": "Lets students sign in at /school to see their own homework, attendance, fees and calendar.",
+   "fieldname": "enable_student_app",
+   "fieldtype": "Check",
+   "label": "Enable Student App"
+  },
+  {
+   "default": "1",
    "description": "Sends a push alert to parents using the parent app when a submitted register marks their child absent.",
    "fieldname": "notify_parents_of_absence",
    "fieldtype": "Check",
    "label": "Notify Parents of Absence"
+  },
+  {
+   "default": "1",
+   "description": "Lets class teachers see who has fees due in their own divisions. School admins always can.",
+   "fieldname": "show_fees_to_teachers",
+   "fieldtype": "Check",
+   "label": "Show Fees to Class Teachers"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-09-25 10:00:00.000000",
+ "modified": "2026-10-08 10:00:00.000000",
  "modified_by": "Administrator",
  "module": "Edu Quality",
  "name": "School App Settings",

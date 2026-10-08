@@ -377,6 +377,21 @@
    "translatable": 0,
    "unique": 0,
    "width": null
+  },
+  {
+   "doctype": "Custom Field",
+   "dt": "Student Group",
+   "name": "Student Group-custom_raven_channel",
+   "fieldname": "custom_raven_channel",
+   "fieldtype": "Data",
+   "label": "Raven Channel",
+   "insert_after": "custom_school",
+   "options": null,
+   "description": "Parents' channel opened from the school app.",
+   "read_only": 1,
+   "module": "Edu Quality",
+   "is_system_generated": 0,
+   "no_copy": 1
   }
  ],
  "custom_perms": [],

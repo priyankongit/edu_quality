@@ -3,3 +3,5 @@
 [post_model_sync]
 edu_quality.patches.v1.enable_absence_notifications
 edu_quality.patches.v1.remove_orphaned_custom_fields
+edu_quality.patches.v1.show_fees_to_teachers
+edu_quality.patches.v1.enable_student_app

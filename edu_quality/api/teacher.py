@@ -454,3 +454,246 @@ def update_homework(name, updates=None, status=None):
 	doc.flags.ignore_permissions = True
 	doc.save()
 	return _homework_summary(doc)
+
+
+# ---------------------------------------------------------------- marks
+#
+# Teachers enter marks for plain criteria-scored exams. Descriptive papers, KG exams, remarks and
+# composite groups keep using the desk Marks Entry Tool. Marks are saved as draft Assessment
+# Results; the exam office processes and submits them, after which they are read-only here.
+
+
+def _markable_plans(divisions, plan=None):
+	if not divisions:
+		return []
+	return frappe.db.sql(
+		"""
+		select p.name, p.assessment_name, p.assessment_group, g.assessment_group_name,
+			p.student_group as division, p.program, p.course as subject, c.course_name as subject_name,
+			p.schedule_date, p.maximum_assessment_score as maximum_score, p.grading_scale,
+			p.custom_scoring_type as scoring_type, p.custom_type as exam_type, p.examiner
+		from `tabAssessment Plan` p
+		join `tabAssessment Group` g on g.name = p.assessment_group
+		left join `tabCourse` c on c.name = p.course
+		where p.docstatus = 1 and p.student_group in %(divisions)s
+			and p.custom_scoring_type in ('Marks', 'Grades')
+			and ifnull(p.custom_is_descriptive, 0) = 0
+			and g.is_group = 0
+			and ifnull(g.custom_is_kg_exam, 0) = 0
+			and ifnull(g.custom_is_composite, 0) = 0
+			and (%(plan)s is null or p.name = %(plan)s)
+		order by p.schedule_date desc, g.assessment_group_name, c.course_name
+		limit 300
+		""",
+		{"divisions": tuple(divisions), "plan": plan},
+		as_dict=True,
+	)
+
+
+def _exam_summaries(plans):
+	counts = {}
+	if plans:
+		for row in frappe.db.sql(
+			"""
+			select assessment_plan, count(*) as entered, sum(docstatus = 1) as submitted
+			from `tabAssessment Result`
+			where assessment_plan in %(plans)s and docstatus < 2
+			group by assessment_plan
+			""",
+			{"plans": tuple(p.name for p in plans)},
+			as_dict=True,
+		):
+			counts[row.assessment_plan] = row
+
+	instructor = _instructor()
+	divisions, result = {}, []
+	for plan in plans:
+		if plan.division not in divisions:
+			divisions[plan.division] = {
+				"name": frappe.db.get_value("Student Group", plan.division, "student_group_name"),
+				"strength": len(_roster(plan.division, plan.program)),
+			}
+		count = counts.get(plan.name) or {}
+		result.append(
+			{
+				**plan,
+				"schedule_date": str(plan.schedule_date) if plan.schedule_date else None,
+				"division_name": divisions[plan.division]["name"],
+				"strength": divisions[plan.division]["strength"],
+				"entered": cint(count.get("entered")),
+				"submitted": cint(count.get("submitted")),
+				"mine": bool(instructor and plan.examiner == instructor),
+			}
+		)
+	return result
+
+
+def _get_markable_plan(name):
+	plan = frappe.db.get_value("Assessment Plan", name, ["name", "student_group"], as_dict=True)
+	if not plan:
+		frappe.throw(_("Exam {0} not found.").format(name), frappe.DoesNotExistError)
+	_assert_division(plan.student_group)
+	rows = _markable_plans([plan.student_group], plan=name)
+	if not rows:
+		frappe.throw(_("Marks for this exam are entered on the desk, not in the app."))
+	return rows[0]
+
+
+def _plan_criteria(plan):
+	return frappe.get_all(
+		"Assessment Plan Criteria",
+		filters={"parent": plan, "parenttype": "Assessment Plan"},
+		fields=["assessment_criteria", "maximum_score", "custom_scale"],
+		order_by="idx asc",
+	)
+
+
+def _grades(grading_scale):
+	return frappe.get_all(
+		"Grading Scale Interval",
+		filters={"parent": grading_scale, "parenttype": "Grading Scale"},
+		fields=["grade_code as code", "grade_description as description"],
+		order_by="threshold desc",
+	)
+
+
+@frappe.whitelist(methods=["GET"])
+def get_exam_list():
+	"""Exams in the teacher's divisions that take marks in the app, with how far entry has got."""
+	return _exam_summaries(_markable_plans(_my_divisions()))
+
+
+@frappe.whitelist(methods=["GET"])
+def get_marks_sheet(plan):
+	"""Roster for one exam with each student's marks (or grades) per criterion.
+
+	A value is a number of marks, a grade code, "-" for absent, or missing if not entered yet.
+	"""
+	row = _get_markable_plan(plan)
+	results = frappe.get_all(
+		"Assessment Result",
+		filters={"assessment_plan": plan, "docstatus": ["<", 2]},
+		fields=["name", "student", "docstatus"],
+	)
+	by_result = {r.name: r for r in results}
+	values = {}
+	for d in frappe.get_all(
+		"Assessment Result Detail",
+		filters={"parent": ["in", list(by_result) or [""]], "parenttype": "Assessment Result"},
+		fields=["parent", "assessment_criteria", "score", "grade", "custom_is_absent"],
+	):
+		if d.custom_is_absent:
+			value = "-"
+		elif row.scoring_type == "Grades":
+			value = d.grade or ""
+		else:
+			value = d.score
+		values.setdefault(by_result[d.parent].student, {})[d.assessment_criteria] = value
+
+	locked = {r.student for r in results if r.docstatus == 1}
+	students = sorted(_roster(row.division, row.program), key=_roll_key)
+	return {
+		**_exam_summaries([row])[0],
+		"criteria": [
+			{"name": c.assessment_criteria, "maximum_score": c.maximum_score} for c in _plan_criteria(plan)
+		],
+		"grades": _grades(row.grading_scale) if row.scoring_type == "Grades" else [],
+		"students": [
+			{
+				"student": s.student,
+				"student_name": s.student_name,
+				"roll_no": s.roll_no,
+				"locked": s.student in locked,
+				"values": values.get(s.student, {}),
+			}
+			for s in students
+		],
+	}
+
+
+@frappe.whitelist(methods=["POST"])
+def save_marks(plan, marks):
+	"""Save marks as draft Assessment Results.
+
+	`marks` maps student ID to {criteria: value}; a value is marks, a grade code, "-" for absent,
+	or "" to clear it. Results the exam office has already submitted are left as they are.
+	"""
+	from edu_quality.edu_quality.report.marks_entry_tool.marks_entry_tool import (
+		add_assessment_criteria,
+		get_assessment_result_doc,
+	)
+
+	row = _get_markable_plan(plan)
+	marks = json.loads(marks) if isinstance(marks, str) else (marks or {})
+	criteria = {c.assessment_criteria: c for c in _plan_criteria(plan)}
+	grades = {g.code.upper(): g.code for g in _grades(row.grading_scale)} if row.scoring_type == "Grades" else {}
+	roster = {s.student: s.student_name for s in _roster(row.division, row.program)}
+
+	# Check everything before writing anything.
+	clean = {}
+	for student, entries in marks.items():
+		if student not in roster:
+			frappe.throw(_("{0} is not enrolled in {1}.").format(student, row.division))
+		clean[student] = {}
+		for name, value in (entries or {}).items():
+			if name not in criteria:
+				frappe.throw(_("{0} is not part of this exam.").format(name))
+			value = "" if value is None else str(value).strip()
+			if value in ("", "-"):
+				pass
+			elif row.scoring_type == "Grades":
+				if value.upper() not in grades:
+					frappe.throw(_("{0}: {1} is not a grade on this exam's scale.").format(roster[student], value))
+				value = grades[value.upper()]
+			else:
+				try:
+					score = float(value)
+				except ValueError:
+					frappe.throw(_("{0}: {1} is not a number.").format(roster[student], value))
+				maximum = criteria[name].maximum_score or 0
+				if score < 0 or score > maximum:
+					frappe.throw(
+						_("{0}: {1} marks is outside 0–{2:g} for {3}.").format(roster[student], value, maximum, name)
+					)
+			clean[student][name] = value
+
+	saved = skipped = 0
+	for student, entries in clean.items():
+		if not entries:
+			continue
+		doc = get_assessment_result_doc(student, plan)
+		if doc is None:  # already submitted by the exam office
+			skipped += 1
+			continue
+
+		details = list(doc.details)
+		for name, value in entries.items():
+			if value == "":
+				details = [d for d in details if d.get("assessment_criteria") != name]
+				continue
+			add_assessment_criteria(
+				details,
+				{
+					"assessment_criteria": {
+						"name": name,
+						"value": value,
+						"scoring_type": row.scoring_type,
+						"custom_scale": criteria[name].custom_scale,
+						"custom_online_assessment": 0,
+					}
+				},
+				None,
+			)
+
+		# Teachers have no Assessment Result DocPerm; access was checked per division above.
+		if not details:
+			if not doc.is_new():
+				frappe.delete_doc("Assessment Result", doc.name, ignore_permissions=True)
+				saved += 1
+			continue
+		doc.update({"student": student, "assessment_plan": plan, "custom_is_descriptive": 0, "details": details})
+		doc.flags.ignore_permissions = True
+		doc.save()
+		saved += 1
+
+	return {**_exam_summaries([row])[0], "saved": saved, "skipped": skipped}

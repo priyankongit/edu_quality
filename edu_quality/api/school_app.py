@@ -24,6 +24,7 @@ DEFAULT_BRANDING = {
 	"icon": "",
 	"colors": {"primary": "#3346D3", "secondary": "#E8ECF8", "ink": "#111827"},
 	"teacher_app_enabled": True,
+	"student_app_enabled": True,
 }
 
 
@@ -50,6 +51,7 @@ def get_branding_dict():
 				"logo": settings.logo or "",
 				"icon": settings.app_icon or settings.logo or "",
 				"teacher_app_enabled": bool(settings.enable_teacher_app),
+				"student_app_enabled": bool(settings.get("enable_student_app")),
 			}
 		)
 		for key, field in (("primary", "primary_color"), ("secondary", "secondary_color"), ("ink", "ink_color")):
@@ -99,8 +101,14 @@ def get_session():
 		personas.append("admin")
 	if frappe.db.exists("Guardian", {"user": user}):
 		personas.append("guardian")
-	if frappe.db.exists("Student", {"user": user}):
+	if frappe.db.exists("Student", {"user": user, "enabled": 1}):
 		personas.append("student")
+
+	from edu_quality.api.school_fees import can_see_fees
+	from edu_quality.api.school_messages import raven_installed
+	from edu_quality.api.student_app import current_student
+
+	student = current_student(user) if "student" in personas else None
 
 	return {
 		"user": user,
@@ -108,6 +116,21 @@ def get_session():
 		"user_image": (instructor and instructor.image) or user_image,
 		"personas": personas,
 		"instructor": instructor,
+		"student": (
+			{
+				"name": student.name,
+				"student_name": student.student_name,
+				"image": student.image,
+				"enrolled": bool(student.enrollment),
+			}
+			if student
+			else None
+		),
+		"features": {
+			"fees": bool(personas) and can_see_fees(),
+			"messages": raven_installed(),
+			"admin": "admin" in personas,
+		},
 		"csrf_token": get_csrf_token(),
 	}
 

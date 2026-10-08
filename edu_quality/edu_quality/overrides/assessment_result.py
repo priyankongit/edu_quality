@@ -29,6 +29,27 @@ class CustomAssessmentResult(AssessmentResult):
 
 		self.validate_duplicate()
 
+	def validate_duplicate(self):
+		# Education uses get_list here, which fails for anyone without read access to every result —
+		# e.g. teachers saving marks from the school app. The check itself isn't about permissions.
+		existing = frappe.get_all(
+			"Assessment Result",
+			filters={
+				"name": ("!=", self.name),
+				"student": self.student,
+				"assessment_plan": self.assessment_plan,
+				"docstatus": ("!=", 2),
+			},
+			pluck="name",
+			limit=1,
+		)
+		if existing:
+			frappe.throw(
+				frappe._("Assessment Result record {0} already exists.").format(
+					frappe.utils.get_link_to_form("Assessment Result", existing[0])
+				)
+			)
+
 	def validate_grade(self):
 		self.total_score = 0.0
 		if self.maximum_score:

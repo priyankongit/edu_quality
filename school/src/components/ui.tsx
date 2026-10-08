@@ -1,7 +1,8 @@
 import clsx from "clsx";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { ChevronLeft, Loader2 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { fileUrl } from "@/lib/frappe";
 import { useBrand } from "@/lib/queries";
 
@@ -113,4 +114,26 @@ export function Chip({ children, tone = "brand" }: { children: ReactNode; tone?:
 
 export function Skeleton({ className }: { className?: string }) {
   return <div aria-hidden className={clsx("animate-pulse rounded-3xl bg-line/60", className)} />;
+}
+
+export function ErrorCard({ message, onRetry }: { message: string; onRetry: () => void }) {
+  return (
+    <Card className="text-sm">
+      <p className="font-semibold text-bad">{message}</p>
+      <button type="button" onClick={onRetry} className="mt-2 font-semibold text-brand dark:text-brand-soft">
+        Try again
+      </button>
+    </Card>
+  );
+}
+
+export const inputCls =
+  "w-full rounded-2xl bg-card px-4 text-base ring-1 ring-line placeholder:text-muted/70 focus:outline-none focus:ring-2 focus:ring-brand";
+
+export function BackLink({ to, children }: { to: string; children: ReactNode }) {
+  return (
+    <Link to={to} className="mb-1 inline-flex items-center gap-1 text-sm font-semibold text-brand dark:text-brand-soft">
+      <ChevronLeft className="h-4 w-4" /> {children}
+    </Link>
+  );
 }

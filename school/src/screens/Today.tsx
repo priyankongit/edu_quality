@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { CalendarClock, ClipboardCheck, GraduationCap, NotebookPen, PenLine, UsersRound } from "lucide-react";
+import { CalendarClock, ClipboardCheck, GraduationCap, MessageCircle, NotebookPen, PenLine, UsersRound, Wallet } from "lucide-react";
 import type { ComponentType } from "react";
 import { Link } from "react-router-dom";
 import { PageTitle } from "@/components/AppShell";
@@ -7,6 +7,7 @@ import DivisionCard, { registerPath } from "@/components/DivisionCard";
 import { Card, Chip, EmptyState, SectionTitle, Skeleton } from "@/components/ui";
 import { minutesOf } from "@/lib/dates";
 import { useBrand, useCurrentUser, useMyDay } from "@/lib/queries";
+import { ComingUp } from "@/screens/Calendar";
 import type { MyDay, Period } from "@/lib/types";
 
 function greeting(date: Date) {
@@ -81,6 +82,7 @@ function Timetable({ periods }: { periods: Period[] }) {
 type Action = { label: string; hint: string; icon: ComponentType<{ className?: string }>; to?: string };
 
 function QuickActions({ day }: { day?: MyDay }) {
+  const user = useCurrentUser();
   const pending = day?.divisions.find((d) => !d.holiday && !d.attendance.submitted);
   const actions: Action[] = [
     {
@@ -91,7 +93,9 @@ function QuickActions({ day }: { day?: MyDay }) {
     },
     { label: "My classes", hint: "Registers & students", icon: UsersRound, to: "/classes" },
     { label: "Add homework", hint: "From your CMAP", icon: NotebookPen, to: "/homework/new" },
-    { label: "Enter marks", hint: "Open exams", icon: PenLine },
+    { label: "Enter marks", hint: "Your exams", icon: PenLine, to: "/marks" },
+    ...(user.features?.messages ? [{ label: "Message parents", hint: "Through Raven", icon: MessageCircle, to: "/messages" }] : []),
+    ...(user.features?.fees ? [{ label: "Fee dues", hint: "Who is overdue", icon: Wallet, to: "/fees" }] : []),
   ];
   return (
     <div className="grid grid-cols-2 gap-3">
@@ -173,6 +177,7 @@ export default function Today() {
               </EmptyState>
             )}
           </section>
+          <ComingUp />
           <section className="grid grid-cols-1 gap-3" aria-labelledby="h-actions">
             <SectionTitle>
               <span id="h-actions">Quick actions</span>

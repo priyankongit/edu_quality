@@ -1,0 +1,24 @@
+{
+ "custom_fields": [
+  {
+   "doctype": "Custom Field",
+   "dt": "Newsletter",
+   "name": "Newsletter-custom_school",
+   "fieldname": "custom_school",
+   "fieldtype": "Link",
+   "label": "School",
+   "insert_after": "sender_email",
+   "options": "School",
+   "description": "Only this school's staff see it in the school app. Leave empty for every school.",
+   "read_only": 0,
+   "module": "Edu Quality",
+   "is_system_generated": 0,
+   "no_copy": 0
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Newsletter",
+ "links": [],
+ "property_setters": [],
+ "sync_on_migrate": 1
+}
